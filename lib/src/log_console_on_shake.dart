@@ -4,11 +4,15 @@ class LogConsoleOnShake extends StatefulWidget {
   final Widget child;
   final bool dark;
   final bool debugOnly;
+  final ThemeData themeData;
+  final ThemeMode themeMode;
 
   LogConsoleOnShake({
     required this.child,
     this.dark = false,
     this.debugOnly = true,
+    required this.themeData,
+    required this.themeMode,
   });
 
   @override
@@ -51,7 +55,8 @@ class _LogConsoleOnShakeState extends State<LogConsoleOnShake> {
 
     var logConsole = LogConsole(
       showCloseButton: true,
-      dark: widget.dark,
+      themeData: widget.themeData,
+      themeMode: widget.themeMode,
     );
     PageRoute route;
     if (Platform.isIOS) {

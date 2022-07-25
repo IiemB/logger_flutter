@@ -66,6 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             LogConsoleOnShake(
+              themeMode: ThemeMode.system,
+              themeData: Theme.of(context),
               child: const Text(
                 'Shake device to open the log console',
               ),
@@ -77,7 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => LogConsole.open(context),
+        onPressed: () => LogConsole.open(
+          context,
+          themeMode: ThemeMode.system,
+          themeData: Theme.of(context),
+        ),
         tooltip: 'info',
         child: const Icon(Icons.info),
       ),

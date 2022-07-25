@@ -5,10 +5,14 @@ int _bufferSize = 20;
 bool _initialized = false;
 
 class LogConsole extends StatefulWidget {
-  final bool dark;
   final bool showCloseButton;
+  final ThemeData themeData;
+  final ThemeMode themeMode;
 
-  LogConsole({this.dark = false, this.showCloseButton = false})
+  LogConsole(
+      {this.showCloseButton = false,
+      required this.themeData,
+      required this.themeMode})
       : assert(_initialized, "Please call LogConsole.init() first.");
 
   static void init({int bufferSize = 20}) {
@@ -27,13 +31,22 @@ class LogConsole extends StatefulWidget {
     ));
   }
 
-  static void open(BuildContext context) {
-    Navigator.push(
+  static Future<T?> open<T>(
+    BuildContext context, {
+    required ThemeData themeData,
+    required ThemeMode themeMode,
+  }) async {
+    final result = await Navigator.push<T>(
       context,
       MaterialPageRoute(
-        builder: (context) => LogConsole(),
+        builder: (context) => LogConsole(
+          themeData: themeData,
+          themeMode: themeMode,
+        ),
       ),
     );
+
+    return result;
   }
 
   @override
@@ -81,7 +94,8 @@ class _LogConsoleState extends State<LogConsole> {
 
     _scrollController.addListener(() {
       if (!_scrollListenerEnabled) return;
-      var scrolledToBottom = _scrollController.offset >= _scrollController.position.maxScrollExtent;
+      var scrolledToBottom = _scrollController.offset >=
+          _scrollController.position.maxScrollExtent;
       setState(() {
         _followBottom = scrolledToBottom;
       });
@@ -124,15 +138,7 @@ class _LogConsoleState extends State<LogConsole> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: widget.dark
-          ? ThemeData(
-              brightness: Brightness.dark,
-              colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.blueGrey),
-            )
-          : ThemeData(
-              brightness: Brightness.light,
-              colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.lightBlueAccent),
-            ),
+      theme: widget.themeData,
       home: Scaffold(
         body: SafeArea(
           child: Column(
@@ -154,10 +160,7 @@ class _LogConsoleState extends State<LogConsole> {
             child: FloatingActionButton(
               mini: true,
               clipBehavior: Clip.antiAlias,
-              child: Icon(
-                Icons.arrow_downward,
-                color: widget.dark ? Colors.white : Colors.lightBlue[900],
-              ),
+              child: Icon(Icons.arrow_downward),
               onPressed: _scrollToBottom,
             ),
           ),
@@ -168,7 +171,8 @@ class _LogConsoleState extends State<LogConsole> {
 
   Widget _buildLogContent() {
     return Container(
-      color: widget.dark ? Colors.black : Colors.grey[150],
+      color:
+          widget.themeMode == ThemeMode.dark ? Colors.black : Colors.grey[150],
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: SizedBox(
@@ -193,7 +197,7 @@ class _LogConsoleState extends State<LogConsole> {
 
   Widget _buildTopBar() {
     return LogBar(
-      dark: widget.dark,
+      dark: widget.themeMode == ThemeMode.dark,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
@@ -235,7 +239,7 @@ class _LogConsoleState extends State<LogConsole> {
 
   Widget _buildBottomBar() {
     return LogBar(
-      dark: widget.dark,
+      dark: widget.themeMode == ThemeMode.dark,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
@@ -307,7 +311,7 @@ class _LogConsoleState extends State<LogConsole> {
   }
 
   RenderedEvent _renderEvent(OutputEvent event) {
-    var parser = AnsiParser(widget.dark);
+    var parser = AnsiParser(widget.themeMode == ThemeMode.dark);
     var text = event.lines.join('\n');
     parser.parse(text);
     return RenderedEvent(

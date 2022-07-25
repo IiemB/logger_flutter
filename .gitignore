@@ -14,3 +14,6 @@ demo/
 
 pubspec.lock
 doc/
+
+# fvm 
+.fvm/
