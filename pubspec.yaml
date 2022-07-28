@@ -11,5 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
   logger:
-    path: ../logger
+    git:
+      url: git@github.com:IiemB/logger.git
   sensors_plus: ^1.3.2
